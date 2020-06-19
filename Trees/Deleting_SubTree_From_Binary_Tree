@@ -1,0 +1,23 @@
+ //Метод структуры BinaryTreeNode
+ 
+ void deleteSubTree(int data) {
+            if (this->data == data) {
+                delete this;
+            }
+            else {
+                if (data > this->data) {
+                    if (this->right->data == data) {
+                        this->right->deleteAll();
+                        this->right = nullptr;
+                    }
+                    else this->right->deleteSubTree(data);
+                }
+                else {
+                    if (this->left->data == data) {
+                        this->left->deleteAll();
+                        this->left = nullptr;
+                    }
+                    else this->left->deleteSubTree(data);
+                }
+            }
+        }
