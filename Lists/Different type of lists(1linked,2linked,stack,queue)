@@ -1,0 +1,444 @@
+#include <iostream>
+using namespace std;
+struct List
+{
+	struct Node
+	{
+		int data;
+		Node* pNext;
+		Node* pPrev;
+		Node()
+		{
+			data = NULL;
+			pNext = nullptr;
+			pPrev = nullptr;
+		}
+	};
+	Node* head;
+	Node* tail;
+	List();
+	void push_back(int dat);
+	void push_forward(int dat);
+	int pop_first();
+	int pop_last();
+	int peek_first();
+	int peek_last();
+	void show_from_head();
+	void show_from_tail();
+	void delete_by_p(Node* deleting_node);
+	void swap(Node* first_elem, Node* secnd_elem);
+};
+List::List()
+{
+	tail = nullptr;
+	head = nullptr;
+}
+void List::push_back(int dat)
+{
+	Node* New_Node = new Node;
+	New_Node->data = dat;
+	if (tail == nullptr)	
+		head = New_Node;
+	else
+	{
+		tail->pPrev = New_Node;
+		New_Node->pNext = tail;
+	}
+	tail = New_Node;
+}
+void List::push_forward(int dat)
+{
+	Node* New_Node = new Node;
+	New_Node->data = dat;
+	if (head == nullptr)//blank
+		tail = New_Node;
+	else
+	{
+		head->pNext = New_Node;
+		New_Node->pPrev = head;;
+	}
+	head = New_Node;
+}
+int List::pop_first()//head
+{
+	if (head != nullptr)
+	{
+		int Data = head->data;
+		if (head->pPrev != nullptr)
+		{
+			Node* Cur_Node = head->pPrev;
+			Cur_Node->pNext = nullptr;
+			delete head;
+			head = Cur_Node;
+			return Data;
+		}
+		delete head;
+		head = nullptr;
+		return Data;
+	}
+	return NULL;
+}
+int List::pop_last()//tail
+{
+	if (tail != nullptr)
+	{
+		int Data = tail->data;
+		if (tail->pNext != nullptr)
+		{
+			Node* Cur_Node = tail->pNext;
+			Cur_Node->pPrev = nullptr;
+			delete tail;
+			tail = Cur_Node;
+			return Data;
+		}
+		delete tail;
+		tail = nullptr;
+		return Data;
+	}
+	return NULL;
+}
+int List::peek_first()//head
+{
+	if (head != nullptr)
+		return head->data;
+	return NULL;
+}
+int List::peek_last()//tail
+{
+	if (tail != nullptr)
+		return tail->data;
+	return NULL;
+}
+void List::show_from_head()
+{
+	if (head != nullptr)
+	{
+		Node* Cur_Node = head;
+		while (Cur_Node->pPrev != nullptr)
+		{
+			cout << Cur_Node->data;
+			Cur_Node = Cur_Node->pPrev;
+		}
+		cout << Cur_Node->data<<endl;
+	}
+}
+void List::show_from_tail()
+{
+	if (tail != nullptr)
+	{
+		Node* Cur_Node = tail;
+		while (Cur_Node->pNext != nullptr)
+		{
+			cout << Cur_Node->data;
+			Cur_Node = Cur_Node->pNext;
+		}
+		cout << Cur_Node->data<<endl;
+	}
+}
+void List::delete_by_p(Node* deleting_node)
+{
+	if (deleting_node == nullptr)return;//no nodes
+	else if (deleting_node == head && deleting_node == tail)//one node
+	{
+		delete deleting_node;
+		tail = nullptr;
+		head = nullptr;
+	}
+	else if (deleting_node == head)
+	{
+		head = head->pPrev;
+		delete head->pNext;
+		head->pNext = nullptr;
+	}
+	else if (deleting_node == tail)
+	{
+		tail = tail->pNext;
+		delete tail->pPrev;
+		tail->pPrev = nullptr;
+	}
+	else
+	{
+		Node* prev_Node = deleting_node->pPrev;
+		Node* next_Node = deleting_node->pNext;
+		delete deleting_node;
+		prev_Node->pNext = next_Node;
+		next_Node->pPrev = prev_Node;
+	}
+	//Node* prev_Node = deleting_node->pPrev;
+}
+void List::swap(Node* first_elem, Node* second_elem)
+{
+	if (second_elem != first_elem)
+	{
+		if (first_elem->pNext == second_elem)
+		{
+			Node* first_elem_prev = first_elem->pPrev;
+			Node* second_elem_next = second_elem->pNext;
+			if (first_elem_prev != nullptr)first_elem_prev->pNext = second_elem;
+			if (second_elem_next != nullptr)second_elem_next->pPrev = first_elem;
+			first_elem->pNext = second_elem_next;
+			second_elem->pPrev = first_elem_prev;
+			first_elem->pPrev = second_elem;
+			second_elem->pNext = first_elem;
+
+		}
+		else if (first_elem->pPrev == second_elem)
+		{
+			Node* first_elem_next = first_elem->pNext;
+			Node* second_elem_prev = second_elem->pPrev;
+			if (first_elem_next != nullptr)first_elem_next->pPrev = second_elem;
+			if (second_elem_prev != nullptr)second_elem_prev->pNext = first_elem;
+			second_elem->pNext = first_elem_next;
+			first_elem->pPrev = second_elem_prev;
+			first_elem->pNext = second_elem;
+			second_elem->pPrev = first_elem;
+		}
+		else
+		{
+			Node* first_elem_next = first_elem->pNext;
+			Node* second_elem_prev = second_elem->pPrev;
+			Node* first_elem_prev = first_elem->pPrev;
+			Node* second_elem_next = second_elem->pNext;
+			if (first_elem_next == second_elem_prev || second_elem_next == first_elem_prev)
+			{
+
+			}
+			else
+			{
+
+			}
+
+		}
+		if (second_elem->pNext == nullptr)head = second_elem;
+		if (second_elem->pPrev == nullptr)tail = second_elem;
+		if (first_elem->pNext == nullptr)head = first_elem;
+		if (first_elem->pPrev == nullptr)tail = first_elem;
+
+	}
+}
+
+	struct List_ONE
+	{
+		struct Node
+		{
+			int data;
+			Node* pNext;
+			Node()
+			{
+				data = NULL;
+				pNext = nullptr;
+			}
+		};
+		Node* tail;
+		List_ONE();
+		void push_back(int dat);
+		void push_forward(int dat);
+		int pop_first();
+		int pop_last();
+		int peek_first();
+		int peek_last();
+		void show_from_tail();
+		void delete_by_p(Node* deleting_node);
+		void swap(Node* first_elem, Node* secnd_elem);
+	};
+	List_ONE::List_ONE()
+	{
+		tail = nullptr;
+	}
+	void List_ONE::push_back(int dat)
+	{
+		Node* New_Node = new Node;
+		New_Node->data = dat;
+		New_Node->pNext = tail;
+		tail = New_Node;
+	}
+	void List_ONE::push_forward(int dat)
+	{
+		Node* New_Node = new Node;
+		New_Node->data = dat;
+		if (tail == nullptr)tail = New_Node;
+		else
+		{
+			Node* Cur_Node = tail;
+			while (Cur_Node->pNext != nullptr)Cur_Node = Cur_Node->pNext;
+			Cur_Node->pNext = New_Node;
+		}
+	}
+	int List_ONE::pop_first()
+	{
+		if (tail != nullptr)
+		{
+			int Data;
+			Node* Cur_Node = tail;
+			if (Cur_Node->pNext == nullptr)
+			{
+				Data = Cur_Node->data;
+				delete Cur_Node;
+				tail = nullptr;
+				return Data;
+			}
+			while (Cur_Node->pNext->pNext != nullptr)Cur_Node = Cur_Node->pNext;
+			Node* Cur_Node_Next = Cur_Node->pNext;
+			Data = Cur_Node_Next->data;
+			delete Cur_Node_Next;
+			Cur_Node->pNext = nullptr;
+			return Data;
+		}
+		return NULL;
+	}
+	int List_ONE::pop_last()
+	{
+		if (tail != nullptr)
+		{
+			Node* Cur_Node = tail;
+			int Data = Cur_Node->data;
+			tail = Cur_Node->pNext;
+			delete Cur_Node;
+			return Data;
+		}
+		return NULL;
+	}
+	int List_ONE::peek_first()
+	{
+		if (tail != nullptr)
+		{
+			Node* Cur_Node = tail;
+			while (Cur_Node->pNext != nullptr)Cur_Node = Cur_Node->pNext;
+			return Cur_Node->data;
+		}
+		return NULL;
+	}
+	int List_ONE::peek_last()
+	{
+		if (tail != nullptr)
+			return tail->data;
+		return NULL;
+	}
+	void List_ONE::show_from_tail()
+	{
+		if (tail != nullptr)
+		{
+			Node* Cur_Node = tail;
+			while (Cur_Node->pNext != nullptr)
+			{
+				cout << Cur_Node->data << " ";
+				Cur_Node = Cur_Node->pNext;
+			}
+			cout << Cur_Node->data << " ";
+		}
+	}
+	struct Stack
+	{
+		struct Node
+		{
+			int data;
+			Node* pNext;
+			Node()
+			{
+				data = NULL;
+				pNext = nullptr;
+			}
+		};
+		Node* head;
+		void add(int dat);
+		int pop();
+		int peek();
+		void show();
+		Stack();
+	};
+	void Stack::add(int dat)
+	{
+		Node* New_Node = new Node;
+		New_Node->data = dat;
+		New_Node->pNext = head;
+		head = New_Node;
+	}
+	int Stack::pop()
+	{
+		if (head != nullptr)
+		{
+			int result = head->data;
+			Node* Cur_Node = head;
+			head = Cur_Node->pNext;
+			delete Cur_Node;
+			return result;
+		}
+		return NULL;
+	}
+	int Stack::peek()
+	{
+		return head->data;
+	}
+	void Stack::show()
+	{
+		Node* Cur_Node = head;
+		while (Cur_Node != nullptr)
+		{
+			cout << Cur_Node->data << " ";
+			Cur_Node = Cur_Node->pNext;
+		}
+	}
+	Stack::Stack()
+	{
+		head = nullptr;
+	}
+	
+	struct Queue
+	{
+		struct Node
+		{
+			int data;
+			Node* pNext;
+			Node()
+			{
+				data = NULL;
+				pNext = nullptr;
+			}
+		};
+		Node* head;
+		Node* tail;
+		Queue();
+		void add(int data);
+		int pop();
+		void show_from_tail();
+		int peek();
+
+	};
+	Queue::Queue()
+	{
+		head = nullptr;
+		tail = nullptr;
+	}
+	void Queue::add(int dat)
+	{
+		Node* New_Node = new Node;
+		New_Node->data = dat;
+		if (head == nullptr)tail = New_Node;
+		else head->pNext = New_Node;
+		head = New_Node;
+	}
+	int Queue::pop()
+	{
+		if (tail != nullptr)
+		{
+			int result = tail->data;
+			Node* Cur_Node = tail;
+			if (tail->pNext != nullptr)tail = tail->pNext;
+			delete Cur_Node;
+			return result;
+		}
+		return NULL;
+	}
+	int Queue::peek()
+	{
+		return tail->data;
+	}
+	void Queue::show_from_tail()
+	{
+		Node* Cur_Node = tail;
+		while (Cur_Node != nullptr)
+		{
+			cout << Cur_Node->data << " ";
+			Cur_Node = Cur_Node->pNext;
+		}
+	}
