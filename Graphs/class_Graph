@@ -1,0 +1,15 @@
+class Graph
+{
+private:
+	void Write();
+public:
+	int number_of_vertix;
+	Graph();
+	bool** matrix;
+	bool Is_Empty();
+	void Set_Graph();
+	void Get_File();
+	
+
+
+};
