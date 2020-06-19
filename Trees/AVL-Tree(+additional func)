@@ -1,0 +1,339 @@
+#include <stack>
+#include <iostream>
+using namespace std;
+struct AVL_Tree
+{
+	struct Node
+	{
+		int key;
+		int height;
+		Node* pLeft;
+		Node* pRight;
+		Node()
+		{
+			key = NULL;
+			height = 0;
+			pLeft = nullptr;
+			pRight = nullptr;
+		}
+	};
+	Node* root;
+	int height(Node* Cur_Node);
+	int cur_balance(Node* Cur_node);
+	int height_of_tree(Node* Cur_Node);
+	Node* min_Value_Node(Node* Cur_Node);
+	Node* max_Value_Node(Node* Cur_Node);
+	int max_key_less_then(int Key);
+	void turn_into_array(Node* Cur_Node, int& i, int* arr);
+
+	Node* LL_rotate(Node* cur_root);
+	Node* LR_rotate(Node* cur_root);
+	Node* RL_rotate(Node* cur_root);
+	Node* RR_rotate(Node* cur_root);
+	//input
+	Node* add_Node(int New_Key,Node* root);
+	Node* delete_Node(int Key, Node* root);
+	//output
+	void show_keys_Pref(Node* root);
+	void show_non_recur(Node* root);
+	AVL_Tree()
+	{
+		root = nullptr;
+	}
+
+};
+int AVL_Tree::cur_balance(Node* Cur_Node)
+{
+	int left_h = 0,right_h = 0;
+	if (Cur_Node->pRight != nullptr)right_h = Cur_Node->pRight->height+1;
+	if (Cur_Node->pLeft != nullptr)left_h = Cur_Node->pLeft->height+1;
+	return left_h-right_h;
+}
+int AVL_Tree::height(Node* Cur_Node)
+{
+	int left_h = 0, right_h = 0;
+	if (Cur_Node->pRight != nullptr)right_h = Cur_Node->pRight->height;
+	if (Cur_Node->pLeft != nullptr)left_h = Cur_Node->pLeft->height;
+	return left_h > right_h ? left_h + 1 : right_h + 1;
+}
+int AVL_Tree::height_of_tree(Node* Cur_Node)
+{
+		if (Cur_Node == nullptr)
+			return 0;
+		int left, right;
+		if (Cur_Node->pLeft != nullptr) {
+			left = height_of_tree(Cur_Node->pLeft);
+		}
+		else
+			left = -1;
+		if (Cur_Node->pRight != nullptr) {
+			right = height_of_tree(Cur_Node->pRight);
+		}
+		else
+			right = -1;
+		int max = left > right ? left : right;
+		return max + 1;
+}
+AVL_Tree::Node* AVL_Tree::min_Value_Node(Node* Cur_Node)//search min key value in this branch
+{
+	Node* Temporary_Node = Cur_Node;
+	while (Temporary_Node->pLeft != nullptr)Temporary_Node = Temporary_Node->pLeft;
+	return Temporary_Node;
+}
+AVL_Tree::Node* AVL_Tree::max_Value_Node(Node* Cur_Node)//search min key value in this branch
+{
+	Node* Temporary_Node = Cur_Node;
+	while (Temporary_Node->pRight != nullptr)Temporary_Node = Temporary_Node->pRight;
+	return Temporary_Node;
+}
+int AVL_Tree::max_key_less_then(int Key)
+{
+	int max = 0;
+	Node* Cur_Node = root;
+	while (true)
+	{
+		if (Cur_Node->height == 0)
+		{
+			return Cur_Node->key;
+		}
+		else if (Cur_Node->key == Key)//if current Node==Key
+		{
+			if (Cur_Node->pLeft != nullptr)
+				return max_Value_Node(Cur_Node->pLeft)->key;
+			else
+				return Cur_Node->key;
+		}
+		else if (Cur_Node->pRight != nullptr)
+		{
+			//if (Cur_Node->pRight->key == Key)return Cur_Node->key;
+			max = min_Value_Node(Cur_Node->pRight)->key;//trying to go right
+			if (max == Key)return Cur_Node->key;
+			else if (max < Key)Cur_Node = Cur_Node->pRight;
+			else if (Cur_Node->pRight->key == Key)return Cur_Node->key;
+		}
+			else if(Cur_Node->pLeft!=nullptr)
+			{
+				Cur_Node = Cur_Node->pLeft;
+			}
+		
+	}
+}
+void AVL_Tree::turn_into_array(Node* Cur_Node, int& i, int* arr)
+{
+	if (Cur_Node != nullptr)
+	{
+		//cout << Cur_Node->key << " " << Cur_Node->height << "" << endl;//<<Cur_Node->height;
+		turn_into_array(Cur_Node->pLeft, i, arr);
+		arr[i] = Cur_Node->key;
+		cout << arr[i] <<" ";
+		i++;
+		turn_into_array(Cur_Node->pRight, i, arr);
+	}
+}
+AVL_Tree::Node* AVL_Tree::LL_rotate(Node* Cur_Node)
+{
+	Node* New_Node = Cur_Node->pRight;
+	Cur_Node->pRight = New_Node->pLeft;
+	New_Node->pLeft = Cur_Node;
+	if (Cur_Node == root)root = New_Node;
+	//reseting height
+	Cur_Node->height = height_of_tree(Cur_Node);
+	New_Node->height = height_of_tree(New_Node);
+	return New_Node;
+}
+AVL_Tree::Node* AVL_Tree::LR_rotate(Node* cur_root)
+{
+	cur_root->pLeft = LL_rotate(cur_root->pLeft);
+	cur_root=RR_rotate(cur_root);
+	return cur_root;
+}
+AVL_Tree::Node* AVL_Tree::RL_rotate(Node* cur_root)
+{
+	cur_root->pRight=RR_rotate(cur_root->pRight);
+	cur_root=LL_rotate(cur_root);
+	return cur_root;
+}
+AVL_Tree::Node* AVL_Tree::RR_rotate(Node* Cur_Node)
+{
+	Node* New_Node = Cur_Node->pLeft;
+	Cur_Node->pLeft = New_Node->pRight;
+	New_Node->pLeft = Cur_Node;
+	if (Cur_Node == root)root = New_Node;
+	//reseting height
+	Cur_Node->height = height_of_tree(Cur_Node);
+	New_Node->height = height_of_tree(New_Node);
+	return New_Node;
+}
+AVL_Tree::Node* AVL_Tree::add_Node(int New_Key,Node* Cur_Node )
+{
+
+	if (Cur_Node == nullptr)
+	{
+		Cur_Node = new Node;
+		Cur_Node->key = New_Key;
+		if (root == nullptr)root = Cur_Node;
+		return Cur_Node;
+	}
+	else if (New_Key > Cur_Node->key)//right
+	{
+		Cur_Node->pRight = add_Node(New_Key, Cur_Node->pRight);
+	}
+	else if (New_Key < Cur_Node->key)//left
+	{
+		Cur_Node->pLeft = add_Node(New_Key, Cur_Node->pLeft);
+	}
+
+	Cur_Node->height = height(Cur_Node);
+	int balance = cur_balance(Cur_Node);
+
+	if (balance <-1 && New_Key > Cur_Node->pRight->key)//rr-imbalance
+	{
+		Cur_Node = LL_rotate(Cur_Node);
+	}
+	else if (balance > 1 && New_Key < Cur_Node->pLeft->key)//ll-imbalance
+	{
+		Cur_Node = RR_rotate(Cur_Node);
+	}
+	
+	else if (balance < -1 && New_Key < Cur_Node->pRight->key)//rl-imbalance
+	{
+		Cur_Node = LR_rotate(Cur_Node);
+	}
+	else if (balance > 1 && New_Key > Cur_Node->pLeft->key)//lr-imbalance
+	{
+		Cur_Node = RL_rotate(Cur_Node);
+	}
+	//if (balance > 1 || balance < -1)cout << "unbalanced";
+	return Cur_Node;
+}
+AVL_Tree::Node* AVL_Tree::delete_Node(int Key,Node* Cur_Node)
+{
+	if (Cur_Node == nullptr)
+		return Cur_Node;
+
+	// If the key to be deleted is smaller  
+	// than the root's key, then it lies 
+	// in left subtree  
+	if (Key < Cur_Node->key)
+		Cur_Node->pLeft = delete_Node(Key,Cur_Node->pLeft);
+
+	// If the key to be deleted is greater  
+	// than the root's key, then it lies  
+	// in right subtree  
+	else if (Key > Cur_Node->key)
+		Cur_Node->pRight = delete_Node(Key,Cur_Node->pRight);
+
+	// if key is same as root's key, then  
+	// This is the node to be deleted  
+	else
+	{
+		// node with only one child or no child  
+		if ((Cur_Node->pLeft == nullptr) || (Cur_Node->pRight == nullptr))//if it is a leaf or have 1 child
+		{
+			Node* Temp_Node = Cur_Node->pLeft ? Cur_Node->pLeft : Cur_Node->pRight;
+
+			// No child case  
+			if (Temp_Node == nullptr)//leaf
+			{
+				Temp_Node = Cur_Node;
+				Cur_Node = nullptr;
+			}
+			else // One child case  
+			{
+				*Cur_Node = *Temp_Node; // Copy the contents of  
+			}
+							   // the non-empty child  
+			delete Temp_Node;
+		}
+		else
+		{
+
+			// node with two children: Get the inorder  
+			// successor (smallest in the right subtree)  
+			Node* Temp_Node = min_Value_Node(Cur_Node->pRight);
+
+			// Copy the inorder successor's  
+			// data to this node  
+			Cur_Node->key = Temp_Node->key;
+
+			// Delete the inorder successor  
+			Cur_Node->pRight = delete_Node(Temp_Node->key,Cur_Node->pRight);
+			
+		}
+	}
+
+	// If the tree had only one node 
+	// then return  
+	if (Cur_Node == nullptr)
+		return Cur_Node;
+
+	//root->height = 1 + max(height(root->left),
+		//height(root->right));
+	Cur_Node->height = height(Cur_Node);
+
+	// STEP 3: GET THE BALANCE FACTOR OF  
+	// THIS NODE (to check whether this  
+	// node became unbalanced)  
+	int balance = cur_balance(Cur_Node);
+
+	// If this node becomes unbalanced,  
+	// then there are 4 cases  
+	
+
+	// Left Left Case  
+	if (balance > 1 &&
+		cur_balance(Cur_Node->pLeft) >= 0)
+		return RR_rotate(Cur_Node);
+
+	// Left Right Case  
+	if (balance > 1 &&
+		cur_balance(Cur_Node->pLeft) < 0)
+	{
+		Cur_Node->pLeft = LL_rotate(Cur_Node->pLeft);
+		return RR_rotate(Cur_Node);
+	}
+
+	// Right Right Case  
+	if (balance < -1 &&
+		cur_balance(Cur_Node->pRight) <= 0)
+		return LL_rotate(Cur_Node);
+
+	// Right Left Case  
+	if (balance < -1 &&
+		cur_balance(Cur_Node->pRight) > 0)
+	{
+		Cur_Node->pRight = RR_rotate(Cur_Node->pRight);
+		return LL_rotate(Cur_Node);
+	}
+	
+	return Cur_Node;
+}
+void AVL_Tree::show_keys_Pref(Node* Cur_Node)
+{
+	if (Cur_Node != nullptr)
+	{
+		cout << Cur_Node->key << " "<<Cur_Node->height<<""<<endl;//<<Cur_Node->height;
+		show_keys_Pref(Cur_Node->pLeft);
+		show_keys_Pref(Cur_Node->pRight);
+	}
+}
+void AVL_Tree::show_non_recur(Node* root)
+{
+	if (root == nullptr)
+		return;
+
+	stack<Node*> nodeStack;
+	nodeStack.push(root);
+
+
+	while (nodeStack.empty() == false)
+	{
+		Node* node = nodeStack.top();
+
+		if (node->pRight)
+			nodeStack.push(node->pRight);
+		if (node->pLeft)
+			nodeStack.push(node->pLeft);
+	}
+	cout << endl;
+}
