@@ -1,0 +1,15 @@
+char file[64] = "Graph.bin";
+
+void Graph::Write()
+{
+	FILE* f;
+	f = fopen(file, "wb");
+	fwrite(&number_of_vertix, sizeof(int), 1, f);// writes number of vertixes at first
+	for (int i = 0; i < number_of_vertix; i++)
+	{
+		for (int j = 0; j < number_of_vertix; j++)
+			fwrite(&matrix[i][j], sizeof(bool), 1, f);
+
+	}
+	fclose(f);
+}
