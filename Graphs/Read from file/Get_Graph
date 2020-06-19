@@ -1,0 +1,19 @@
+char file[64] = "Graph.bin";
+
+void Graph::Get_File()
+{
+	FILE* f;
+	f = fopen(file, "rb");
+	fread(&number_of_vertix, sizeof(int), 1, f);// Firstly it reads the number of vertixes
+	matrix = new bool* [number_of_vertix];
+	for (int i = 0; i < number_of_vertix; i++)
+	{
+		matrix[i] = new bool[number_of_vertix];
+	}
+
+
+	for (int i = 0; i < number_of_vertix; i++)
+		for (int j = 0; j < number_of_vertix; j++)
+			fread(&matrix[i][j], sizeof(bool), 1, f);
+	fclose(f);
+}
